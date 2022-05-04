@@ -26,3 +26,27 @@ function operate(operator, num1, num2) {
             return divide(num1, num2);
     }
 }
+
+function updateDisplayText(currDisplay, newInput) {
+    if (currDisplay > 0) {
+        calculator.displayText = currDisplay += newInput;
+        activeScreen.textContent = calculator.displayText;
+    } else {
+        calculator.displayText = newInput;
+        activeScreen.textContent = calculator.displayText;
+    }    
+}
+
+let calculator = {
+    displayText: '0',
+    firstNum: ''
+}
+
+const activeScreen = document.querySelector(".active");
+
+const numbers = document.querySelectorAll("[data-num]");
+numbers.forEach((number) => {
+    number.addEventListener('click', () => {
+        updateDisplayText(calculator.displayText, number.getAttribute('data-num'));
+    });
+});
