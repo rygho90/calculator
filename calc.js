@@ -29,24 +29,68 @@ function operate(operator, num1, num2) {
 
 function updateDisplayText(currDisplay, newInput) {
     if (currDisplay > 0) {
-        calculator.displayText = currDisplay += newInput;
-        activeScreen.textContent = calculator.displayText;
+        displayText = currDisplay += newInput;
+        activeScreen.textContent = displayText;
     } else {
-        calculator.displayText = newInput;
-        activeScreen.textContent = calculator.displayText;
+        displayText = newInput;
+        activeScreen.textContent = displayText;
     }    
 }
 
-let calculator = {
-    displayText: '0',
-    firstNum: ''
-}
+// Global Declarations
 
+let displayText = '0';
+let firstNum = 0;
+let activeOperand= '+';
 const activeScreen = document.querySelector(".active");
+
+// Number Keys
 
 const numbers = document.querySelectorAll("[data-num]");
 numbers.forEach((number) => {
     number.addEventListener('click', () => {
-        updateDisplayText(calculator.displayText, number.getAttribute('data-num'));
+        updateDisplayText(displayText, number.getAttribute('data-num'));
     });
+});
+
+// Clear Key
+
+const clear = document.querySelector(".clear");
+clear.addEventListener('click', () => {
+    displayText = '0'
+    firstNum = 0;
+    activeOperand= '+';
+    activeScreen.textContent = displayText;
+});
+
+// Backspace Key
+
+const backspace = document.querySelector(".backspace");
+backspace.addEventListener('click', () => {
+    if (displayText.length > 1) {
+        displayText = displayText.slice(0, -1);
+    } else displayText = '0';
+    activeScreen.textContent = displayText;
+});
+
+// Operator Keys
+
+const division = document.querySelector(".divide");
+const multiplication = document.querySelector(".multiply");
+const subtraction = document.querySelector(".subtract");
+const addition = document.querySelector(".add");
+
+addition.addEventListener('click', () => {
+    firstNum = parseFloat(displayText);
+    activeOperand= '+';
+    displayText = '0';
+});
+
+// Equals Key
+
+const equals = document.querySelector(".equals");
+
+equals.addEventListener('click', () => {
+    displayText = operate(activeOperand, firstNum, parseFloat(displayText));
+    console.log(displayText);
 });
