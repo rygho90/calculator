@@ -1,99 +1,124 @@
-function add(num1, num2) {
-    return num1 + num2;
-}
+class Calculator {
+    constructor(previousOperandTextElement, currentOperandTextElement) {
+        this.previousOperandTextElement = previousOperandTextElement;
+        this.currentOperandTextElement = currentOperandTextElement;
+        this.clear();
+    };
 
-function subtract(num1, num2) {
-    return num1 - num2;
-}
+    clear() {
+        this.currentOperand = '';
+        this.previousOperand = '';
+        this.operation = undefined;
+    }
 
-function multiply(num1, num2) {
-    return num1 * num2;
-}
+    delete() {
+        this.currentOperand = this.currentOperand.toString().slice(0, -1)
+    }
 
-function divide(num1, num2) {
-    return num1 / num2;
-}
+    appendNumber(number) {
+        if (number === '.' && this.currentOperand.includes('.')) return
+        this.currentOperand = this.currentOperand.toString() + number.toString();
+    }
 
-function operate(operator, num1, num2) {
-    switch(operator) {
-        case '+':
-            return add(num1, num2);
-        case '-':
-            return subtract(num1, num2);
-        case '*':
-            return multiply(num1, num2);
-        case '/':
-            return divide(num1, num2);
+    chooseOperation(operation) {
+        if (this.currentOperand === '') return
+        if (this.previousOperand !== '') {
+            this.compute()
+        }
+        this.operation = operation
+        this.previousOperand = this.currentOperand
+        this.currentOperand = ''
+    }
+
+    compute() {
+        let computation
+        const prev = parseFloat(this.previousOperand)
+        const current = parseFloat(this.currentOperand)
+        if (isNaN(prev) || isNaN(current)) return
+        switch (this.operation) {
+            case '+':
+                computation = prev + current
+                break
+            case '-':
+                computation = prev - current
+                break
+            case '×':
+                computation = prev * current
+                break
+            case '÷':
+                computation = prev / current
+                break
+            default:
+                return
+        }
+        this.currentOperand = computation
+        this.operation = undefined
+        this.previousOperand = ''
+    }
+
+    getDisplayNumber(number) {
+        const stringNumber = number.toString()
+        const integerDigits = parseFloat(stringNumber.split('.')[0])
+        const decimalDigits = stringNumber.split('.')[1]
+        let integerDisplay
+        if (isNaN(integerDigits)) {
+            integerDisplay = ''
+        } else {
+            integerDisplay = integerDigits.toLocaleString('en', {maximumFractionDigits: 0})
+        }
+        if (decimalDigits != null) {
+            return `${integerDisplay}.${decimalDigits}`
+        } else {
+            return integerDisplay
+        }
+    }
+
+    updateDisplay() {
+        this.currentOperandTextElement.innerText = this.getDisplayNumber(this.currentOperand);
+        if (this.operation != null) {
+            this.previousOperandTextElement.innerText = `${this.previousOperand} ${this.operation}`
+        } else {
+            this.previousOperandTextElement.innerText = ''
+        }
+        
     }
 }
 
-function updateDisplayText(currDisplay, newInput) {
-    if (currDisplay > 0) {
-        displayText = currDisplay += newInput;
-        activeScreen.textContent = displayText;
-    } else {
-        displayText = newInput;
-        activeScreen.textContent = displayText;
-    }    
-}
+const numberButtons = document.querySelectorAll('[data-number');
+const operationButtons = document.querySelectorAll('[data-operation');
+const equalsButton = document.querySelector('[data-equals]');
+const deleteButton = document.querySelector('[data-delete]');
+const clearButton = document.querySelector('[data-clear]');
+const previousOperandTextElement = document.querySelector('[data-previous-operand');
+const currentOperandTextElement = document.querySelector('[data-current-operand]');
 
+const calculator = new Calculator(previousOperandTextElement, currentOperandTextElement);
 
-// Global Declarations
+numberButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        calculator.appendNumber(button.innerText);
+        calculator.updateDisplay();
+    })
+})
 
-let displayText = '0';
-let activeOperand= undefined;
-let currNum = '';
-let prevNum = '';
-const activeScreen = document.querySelector(".active");
-const historyScreen = document.querySelector(".history");
+operationButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        calculator.chooseOperation(button.innerText);
+        calculator.updateDisplay();
+    })
+})
 
-// Number Keys
+equalsButton.addEventListener('click', button => {
+    calculator.compute()
+    calculator.updateDisplay();
+})
 
-const numbers = document.querySelectorAll("[data-num]");
-numbers.forEach((number) => {
-    number.addEventListener('click', () => {
-        updateDisplayText(displayText, number.getAttribute('data-num'));
-    });
-});
+clearButton.addEventListener('click', button => {
+    calculator.clear()
+    calculator.updateDisplay();
+})
 
-// Clear Key
-
-const clear = document.querySelector(".clear");
-clear.addEventListener('click', () => {
-    displayText = '0';
-    activeOperand= undefined;
-    activeScreen.textContent = displayText;
-});
-
-// Backspace Key
-
-const backspace = document.querySelector(".backspace");
-backspace.addEventListener('click', () => {
-    if (displayText.length > 1) {
-        displayText = displayText.slice(0, -1);
-    } else displayText = 0;
-    activeScreen.textContent = displayText;
-});
-
-// Operator Keys
-
-const division = document.querySelector(".divide");
-const multiplication = document.querySelector(".multiply");
-const subtraction = document.querySelector(".subtract");
-const addition = document.querySelector(".add");
-
-addition.addEventListener('click', () => {
-    activeOperand = '+';
-    currNum = displayText;
-    historyScreen.textContent = `${currNum} ${activeOperand}`
-});
-
-// Equals Key
-
-const equals = document.querySelector(".equals");
-
-equals.addEventListener('click', () => {
-    
-
-
-});
+deleteButton.addEventListener('click', button => {
+    calculator.delete()
+    calculator.updateDisplay();
+})
