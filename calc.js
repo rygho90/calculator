@@ -82,6 +82,10 @@ class Calculator {
         }
         
     }
+
+    togglePosNeg() {
+        this.currentOperand *= -1;
+    }
 }
 
 const numberButtons = document.querySelectorAll('[data-number');
@@ -89,8 +93,10 @@ const operationButtons = document.querySelectorAll('[data-operation');
 const equalsButton = document.querySelector('[data-equals]');
 const deleteButton = document.querySelector('[data-delete]');
 const clearButton = document.querySelector('[data-clear]');
+const posNegButton = document.querySelector('[data-posneg]');
 const previousOperandTextElement = document.querySelector('[data-previous-operand');
 const currentOperandTextElement = document.querySelector('[data-current-operand]');
+
 
 const calculator = new Calculator(previousOperandTextElement, currentOperandTextElement);
 
@@ -109,16 +115,21 @@ operationButtons.forEach(button => {
 })
 
 equalsButton.addEventListener('click', button => {
-    calculator.compute()
+    calculator.compute();
     calculator.updateDisplay();
 })
 
 clearButton.addEventListener('click', button => {
-    calculator.clear()
+    calculator.clear();
     calculator.updateDisplay();
 })
 
 deleteButton.addEventListener('click', button => {
-    calculator.delete()
+    calculator.delete();
+    calculator.updateDisplay();
+})
+
+posNegButton.addEventListener('click', () => {
+    calculator.togglePosNeg();
     calculator.updateDisplay();
 })
